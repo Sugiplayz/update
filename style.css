@@ -174,12 +174,15 @@ section.slide-up.animated {
 
 /* Style for "Veritas Nexus" subheading in hero section */
 .hero-veritas-nexus {
-    font-size: 2.2em; /* Prominent size */
-    font-weight: 700;
-    color: var(--text-light); /* Light color */
+    font-size: 3.2em; /* Increased size to match hero title */
+    font-weight: 800; /* Bolder font weight */
     margin-bottom: 30px; /* Space it out from subtitle */
     letter-spacing: 1px;
-    text-shadow: 0 0 10px rgba(255,255,255,0.2);
+    background: linear-gradient(45deg, #FFD700, #FFA500); /* Golden to Orange gradient */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 15px rgba(255,215,0,0.6); /* Matching glow */
+    line-height: 1.1;
 }
 
 
@@ -665,7 +668,7 @@ section.slide-up.animated {
     }
 
     .hero-veritas-nexus { /* Adjust for smaller screens */
-        font-size: 1.8em;
+        font-size: 2.2em; /* Adjusted for consistency */
     }
 
     .hero-subtitle {
@@ -770,7 +773,7 @@ section.slide-up.animated {
         font-size: 2em;
     }
     .hero-veritas-nexus { /* Further adjust for very small screens */
-        font-size: 1.5em;
+        font-size: 1.8em; /* Adjusted for consistency */
     }
     .hero-subtitle {
         font-size: 1em;
