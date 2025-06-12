@@ -31,7 +31,7 @@ exports.handler = async function(event, context) {
 
     try {
         const genAI = new GoogleGenerativeAI(API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" }); // You can use "gemini-pro" or other available models
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-preview-05-20" }); // You can use "gemini-pro" or other available models
 
         const prompt = `Analyze the following news text for signs of fake news, misinformation, or bias. Provide a concise assessment, clearly stating whether it appears 'Likely Genuine', 'Likely Fake', or 'Uncertain'. Explain your reasoning briefly. Focus on factual accuracy, source credibility, sensationalism, and logical consistency.
 
