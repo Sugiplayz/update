@@ -30,26 +30,11 @@
             <!-- Detector Section -->
             <section id="detector-section" class="detector-section slide-up">
                 <h2 class="section-title">Analyze Your News</h2>
-                <p class="section-description">Paste the news article URL or text into the area below and click 'Analyze'.</p>
+                <p class="section-description">Paste the news article or text into the area below and click 'Analyze'.</p>
 
                 <div class="main-card">
-                    <div class="input-tabs">
-                        <div class="tab active" data-tab="url">
-                            <i class="fas fa-link"></i> Analyze URL
-                        </div>
-                        <div class="tab" data-tab="text">
-                            <i class="fas fa-file-alt"></i> Analyze Text
-                        </div>
-                    </div>
-
-                    <div id="url-section" class="input-section active">
-                        <div class="input-group">
-                            <label class="input-label" for="newsUrl">Enter News Article URL</label>
-                            <input type="url" class="url-input input-field" id="newsUrl" placeholder="https://example.com/news-article">
-                        </div>
-                    </div>
-
-                    <div id="text-section" class="input-section">
+                    <!-- Simplified Input: Only Text Area -->
+                    <div class="prompt-area">
                         <div class="input-group">
                             <label class="input-label" for="newsText">Paste News Article Text</label>
                             <textarea class="text-input input-field" id="newsText" placeholder="Paste the full news article text here for analysis..."></textarea>
@@ -75,7 +60,7 @@
                         </div>
                         
                         <!-- This div will now display the AI-generated text explanation -->
-                        <div id="analysisContent" class="status-content" style="margin-top: 20px; text-align: left; color: var(--text-light); border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px;">
+                        <div id="analysisContent" class="status-content ai-explanation-text">
                             <!-- AI-generated detailed analysis will be inserted here -->
                         </div>
 
@@ -255,8 +240,5 @@
         </footer>
     </div>
     <script src="script.js"></script>
-    <script>
-        // Smooth scrolling for the "Start Analysis" button (handled by page switching)
-    </script>
 </body>
 </html>
