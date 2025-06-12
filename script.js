@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('DOMContentLoaded fired'); // Added for debugging
 
     // DOM Elements for Detector
-    const newsUrlInput = document.getElementById('newsUrl'); // Correctly references URL input
+    // Removed newsUrlInput as URL analysis is removed
     const newsTextInput = document.getElementById('newsText'); // Correctly references Text input
     const analyzeButton = document.getElementById('analyzeButton');
     const loadingDiv = document.getElementById('loading');
@@ -16,13 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements for Navigation
     const navLinks = document.querySelectorAll('.nav-link');
     const pages = document.querySelectorAll('.page');
-    let currentActivePageId = 'home-page'; // Track currently active page
+    // Removed currentActivePageId as it's less relevant with simplified input
+    // let currentActivePageId = 'home-page'; // Track currently active page
 
-    // DOM Elements for Input Tabs
-    const inputTabs = document.querySelectorAll('.tab');
-    const urlSection = document.getElementById('url-section');
-    const textSection = document.getElementById('text-section');
-    let currentTab = 'url'; // Tracks active input tab (URL or Text)
+    // Removed inputTabs, urlSection, textSection, currentTab as URL analysis and tabs are removed
 
     // --- Utility Functions ---
 
@@ -86,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn(`Nav link for '${pageId.replace('-page', '')}' not found!`); // Debugging
         }
 
-        currentActivePageId = pageId; // Update tracking
+        // currentActivePageId = pageId; // Update tracking - no longer strictly necessary with simplified input
         hideAllStatusDisplays(); // Clear status messages when switching pages
     }
 
@@ -99,76 +96,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Input Tab Logic ---
-
-    function switchTab(tabType) {
-        console.log('Attempting to switch tab to:', tabType); // Debugging
-
-        // Update tab appearance
-        inputTabs.forEach(t => t.classList.remove('active'));
-        const activeTabElement = document.querySelector(`.tab[data-tab="${tabType}"]`);
-        if (activeTabElement) {
-            activeTabElement.classList.add('active');
-            console.log(`Tab '${tabType}' activated.`); // Debugging
-        } else {
-            console.warn(`Tab element for '${tabType}' not found!`); // Debugging
-        }
-
-        // Show/hide sections
-        setVisibility(urlSection, false);
-        setVisibility(textSection, false);
-
-        if (tabType === 'url') {
-            setVisibility(urlSection, true);
-        } else { // It's 'text'
-            setVisibility(textSection, true);
-        }
-
-        currentTab = tabType;
-        console.log('Current tab is now:', currentTab); // Verify tab state
-        hideAllStatusDisplays(); // Clear status messages when switching tabs
-    }
-
-    // Add click listeners to input tabs
-    inputTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            console.log('Input tab clicked. Data-tab:', tab.dataset.tab); // Debugging
-            switchTab(tab.dataset.tab);
-        });
-    });
-
     // --- Analysis Logic ---
 
     analyzeButton.addEventListener('click', async () => {
         console.log('Analyze button clicked.'); // Debugging
-        let content = '';
-        let contentType = ''; // 'url' or 'text'
+        let content = newsTextInput.value.trim(); // Always read from text input now
+        let contentType = 'text'; // Always 'text' now
 
         // Log input values directly before validation
-        console.log('Current active tab for analysis:', currentTab);
-        console.log('Value from newsUrlInput (trimmed):', newsUrlInput ? newsUrlInput.value.trim() : 'N/A');
         console.log('Value from newsTextInput (trimmed):', newsTextInput ? newsTextInput.value.trim() : 'N/A');
 
-        if (currentTab === 'url') {
-            content = newsUrlInput.value.trim();
-            contentType = 'url';
-            if (!content) {
-                setVisibility(errorDiv, true);
-                errorMessage.innerText = 'Please enter a valid URL to analyze.';
-                console.log('URL input empty, showing error.'); // Debugging
-                return;
-            }
-        } else { // currentTab === 'text'
-            content = newsTextInput.value.trim();
-            contentType = 'text';
-            if (!content) {
-                setVisibility(errorDiv, true);
-                errorMessage.innerText = 'Please enter some news text to analyze.';
-                console.log('Text input empty, showing error.'); // Debugging
-                return;
-            }
+        if (!content) {
+            setVisibility(errorDiv, true);
+            errorMessage.innerText = 'Please enter some news text to analyze.';
+            console.log('Text input empty, showing error.'); // Debugging
+            return;
         }
-
+        
         // Hide previous results/errors
         hideAllStatusDisplays();
         setVisibility(loadingDiv, true); // Show loading indicator
@@ -258,19 +202,17 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             console.warn('analysisContent element not found!'); // Debugging
         }
-
-        // Removed "Generate mock sources" logic and detailed breakdown as requested
     }
 
     // --- Initializations ---
 
     // Set initial active page (Home)
     showPage('home-page');
-    // Set initial active tab (URL)
-    switchTab('url');
+    // Removed initial active tab setting as there's only one input type now
+    // switchTab('url'); 
 
     // Intersection Observer for scroll animations
-    const observer = new Intersection Observer((entries) => {
+    const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('animated');
