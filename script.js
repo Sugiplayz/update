@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('DOMContentLoaded fired'); // Added for debugging
 
     // DOM Elements for Detector
-    // Removed newsUrlInput as URL analysis is removed
     const newsTextInput = document.getElementById('newsText'); // Correctly references Text input
     const analyzeButton = document.getElementById('analyzeButton');
     const loadingDiv = document.getElementById('loading');
@@ -16,10 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements for Navigation
     const navLinks = document.querySelectorAll('.nav-link');
     const pages = document.querySelectorAll('.page');
-    // Removed currentActivePageId as it's less relevant with simplified input
-    // let currentActivePageId = 'home-page'; // Track currently active page
-
-    // Removed inputTabs, urlSection, textSection, currentTab as URL analysis and tabs are removed
 
     // --- Utility Functions ---
 
@@ -83,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn(`Nav link for '${pageId.replace('-page', '')}' not found!`); // Debugging
         }
 
-        // currentActivePageId = pageId; // Update tracking - no longer strictly necessary with simplified input
         hideAllStatusDisplays(); // Clear status messages when switching pages
     }
 
@@ -155,16 +149,22 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Displaying analysis result. AI Text:', aiAnalysisText); // Debugging
 
         let verdict = 'uncertain';
-        let confidence = Math.random(); // Default for mock
-        if (aiAnalysisText.toLowerCase().includes('likely genuine') || aiAnalysisText.toLowerCase().includes('likely real') || aiAnalysisText.toLowerCase().includes('true')) {
+        let confidence = Math.random(); // Default for mock, will be overwritten if strong verdict found
+
+        // Normalize AI text for easier keyword matching
+        const normalizedAiText = aiAnalysisText.toLowerCase();
+
+        // Determine verdict based on keywords in AI analysis text
+        if (normalizedAiText.includes('likely genuine') || normalizedAiText.includes('likely real') || normalizedAiText.includes('true')) {
             verdict = 'real';
-            confidence = 0.8 + Math.random() * 0.2; // Higher confidence for "real"
-        } else if (aiAnalysisText.toLowerCase().includes('likely fake') || aiAnalysisText.toLowerCase().includes('misinformation') || aiAnalysisText.toLowerCase().includes('false')) {
+            confidence = 0.85 + Math.random() * 0.15; // High confidence for "real"
+        } else if (normalizedAiText.includes('likely fake') || normalizedAiText.includes('misinformation') || normalizedAiText.includes('false')) {
             verdict = 'fake';
-            confidence = 0.8 + Math.random() * 0.2; // Higher confidence for "fake"
+            confidence = 0.85 + Math.random() * 0.15; // High confidence for "fake"
         } else {
-            // If AI text doesn't strongly indicate real/fake, use a lower/mid confidence for "uncertain"
-            confidence = 0.3 + Math.random() * 0.4; 
+            // If no strong keywords, it's uncertain, use a mid-range random confidence
+            verdict = 'uncertain';
+            confidence = 0.4 + Math.random() * 0.3; // Mid confidence for "uncertain"
         }
         console.log('Inferred verdict:', verdict, 'Confidence:', confidence); // Debugging
 
@@ -208,8 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Set initial active page (Home)
     showPage('home-page');
-    // Removed initial active tab setting as there's only one input type now
-    // switchTab('url'); 
 
     // Intersection Observer for scroll animations
     const observer = new IntersectionObserver((entries) => {
@@ -228,12 +226,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Observe all sections, main-card, and footer for animations
-    document.querySelectorAll('section, .main-card, .footer, .input-area, .status-box').forEach(el => {
+    document.querySelectorAll('section, .main-card, .footer, .prompt-area, .status-box').forEach(el => {
         observer.observe(el);
     });
 
     // Initial check for elements already in view on load
-    document.querySelectorAll('section, .main-card, .footer, .input-area, .status-box').forEach(el => {
+    document.querySelectorAll('section, .main-card, .footer, .prompt-area, .status-box').forEach(el => {
         if (el.getBoundingClientRect().top < window.innerHeight) {
             el.classList.add('animated');
         }
