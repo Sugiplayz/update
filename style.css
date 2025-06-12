@@ -57,8 +57,7 @@ body {
     font-family: 'Inter', sans-serif; /* Ensure Inter font for logo */
     font-size: 2.2rem; /* Larger logo for prominence */
     font-weight: 900; /* Extra bold */
-    /* THIS IS THE CORRECTED LOGO GRADIENT AND SHADOW */
-    background: linear-gradient(90deg, #9f7aea, #6a82fb); /* Purple to lighter blue */
+    background: linear-gradient(90deg, #9f7aea, #6a82fb); /* Purple to lighter blue, as per agreed */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 0 0 10px rgba(159, 122, 234, 0.6), 0 0 20px rgba(106, 130, 251, 0.4);
@@ -189,7 +188,7 @@ section.slide-up.animated {
     border: 1px solid var(--border-color); /* Add border */
 }
 
-/* Input Tabs (from Final Prototype 1.html) */
+/* Input Tabs */
 .input-tabs {
     display: flex;
     margin-bottom: 30px;
@@ -322,7 +321,7 @@ section.slide-up.animated {
 .status-content {
     white-space: pre-wrap;
     font-size: 1.1em;
-    color: var(--text-light);
+    color: var(--text-light); /* Ensure general content text is light */
 }
 
 .status-disclaimer {
@@ -359,24 +358,24 @@ section.slide-up.animated {
 
 .result.real {
     background: linear-gradient(135deg, var(--success-green), #45a049); /* Green for real */
-    color: white;
+    color: white; /* Ensure text is readable on green */
 }
 
 .result.fake {
     background: linear-gradient(135deg, var(--error-red), #d32f2f); /* Red for fake */
-    color: white;
+    color: white; /* Ensure text is readable on red */
 }
 
 .result.uncertain {
     background: linear-gradient(135deg, var(--warning-orange), #f57c00); /* Orange for uncertain */
-    color: white;
+    color: white; /* Ensure text is readable on orange */
 }
 
 .result-header {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
-    color: white; /* Ensure text is visible on gradient backgrounds */
+    color: white; /* Text color for header elements on gradient backgrounds */
 }
 
 .result-icon {
@@ -394,49 +393,9 @@ section.slide-up.animated {
     font-weight: 500;
 }
 
-.analysis-details {
-    background: rgba(255,255,255,0.15); /* Slightly lighter background */
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    color: white; /* Ensure text is visible */
-}
+/* Removed analysis-details as requested */
 
-.detail-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    font-size: 1em;
-}
-.detail-item span:first-child {
-    font-weight: 500;
-}
-.detail-item span:last-child {
-    font-weight: 400;
-    color: rgba(255,255,255,0.8);
-}
-
-
-.sources-checked { /* This class is no longer used but kept for consistency with older CSS parsing */
-    margin-top: 20px;
-    color: white;
-}
-
-.sources-grid { /* This class is no longer used but kept for consistency with older CSS parsing */
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.source-item { /* This class is no longer used but kept for consistency with older CSS parsing */
-    background: rgba(255,255,255,0.1);
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    color: rgba(255,255,255,0.9);
-    text-align: center;
-}
+/* Removed sources-checked and related classes as requested */
 
 
 /* Features Section */
@@ -540,7 +499,7 @@ section.slide-up.animated {
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    text-align: center;
+    text-align: center; /* Ensures content within is centered */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 1px solid var(--border-color); /* Add border */
 }
@@ -559,6 +518,28 @@ section.slide-up.animated {
     border: 2px solid var(--warning-orange); /* Themed border for important */
     background: linear-gradient(135deg, var(--card-bg) 0%, #2e3b5e 100%); /* Subtle gradient */
 }
+
+/* Team Member Text Colors */
+.team-member .member-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent-blue); /* Blue color for names */
+    margin-bottom: 8px;
+}
+
+.team-member .member-role {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light); /* Lighter text for roles */
+    margin-bottom: 10px;
+}
+
+.team-member .member-description {
+    font-size: 0.9rem;
+    color: var(--text-muted); /* Muted text for descriptions */
+    line-height: 1.5;
+}
+
 
 .badge {
     display: inline-block;
