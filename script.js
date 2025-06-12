@@ -155,14 +155,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const normalizedAiText = aiAnalysisText.toLowerCase();
 
         // Determine verdict based on keywords in AI analysis text
-        if (normalizedAiText.includes('likely genuine') || normalizedAiText.includes('likely real') || normalizedAiText.includes('true')) {
-            verdict = 'real';
-            confidence = 0.85 + Math.random() * 0.15; // High confidence for "real"
-        } else if (normalizedAiText.includes('likely fake') || normalizedAiText.includes('misinformation') || normalizedAiText.includes('false')) {
+        // Prioritize explicit "fake" keywords over "real" if both are present in a complex AI response
+        if (normalizedAiText.includes('likely fake') || normalizedAiText.includes('misinformation') || normalizedAiText.includes('false')) {
             verdict = 'fake';
             confidence = 0.85 + Math.random() * 0.15; // High confidence for "fake"
+        } else if (normalizedAiText.includes('likely genuine') || normalizedAiText.includes('likely real') || normalizedAiText.includes('true')) {
+            verdict = 'real';
+            confidence = 0.85 + Math.random() * 0.15; // High confidence for "real"
         } else {
-            // If no strong keywords, it's uncertain, use a mid-range random confidence
+            // If no strong real/fake keywords, it's uncertain, use a mid-range random confidence
             verdict = 'uncertain';
             confidence = 0.4 + Math.random() * 0.3; // Mid confidence for "uncertain"
         }
@@ -183,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (verdict === 'fake') {
                 resultIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
                 if (resultTitle) resultTitle.textContent = 'Likely FAKE News';
-            } else { // This is the 'uncertain' case
+            } else { // This is the 'uncertain' case, explicitly set to yellow/question
                 resultIcon.innerHTML = '<i class="fas fa-question-circle"></i>'; // Correct Font Awesome icon for uncertain
                 if (resultTitle) resultTitle.textContent = 'Uncertain - Needs Verification';
             }
