@@ -296,8 +296,8 @@ section.slide-up.animated {
 .ai-explanation-text {
     margin-top: 15px; /* Adjust margin after heading */
     text-align: left;
-    font-weight: bold; /* Make AI text bold */
-    color: #e0e0e0; /* Changed to a light grey for better contrast on all result backgrounds */
+    font-weight: bold; /* Keep AI text bold */
+    color: #f0f0f0; /* Very light grey, looks good on all result colors */
     line-height: 1.7; /* Improve readability */
 }
 
