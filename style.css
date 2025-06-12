@@ -54,21 +54,22 @@ body {
 }
 
 .nav-logo {
-    font-family: 'Inter', sans-serif; /* Ensure Inter font for logo */
-    font-size: 2.2rem; /* Larger logo for prominence */
-    font-weight: 900; /* Extra bold */
-    background: linear-gradient(90deg, #9f7aea, #6a82fb); /* Purple to lighter blue, as per agreed */
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 10px rgba(159, 122, 234, 0.6), 0 0 20px rgba(106, 130, 251, 0.4);
-    letter-spacing: -1px; /* Slightly tighter for modern look */
-    transition: all 0.3s ease;
-    cursor: default;
+    /* Adjusted styles for the new SVG logo */
+    font-size: 0; /* Hide any default text if present */
+    line-height: 0; /* Collapse line height */
 }
 
-.nav-logo:hover {
-    text-shadow: 0 0 15px rgba(159, 122, 234, 0.8), 0 0 25px rgba(106, 130, 251, 0.6); /* More intense glow on hover */
-    transform: scale(1.02);
+.nav-logo svg {
+    display: block; /* Ensure SVG behaves as a block element */
+    width: 60px; /* Adjust as needed */
+    height: 40px; /* Adjust as needed */
+    filter: drop-shadow(0 0 8px rgba(159, 122, 234, 0.6)); /* Subtle glow for the SVG */
+    transition: all 0.3s ease;
+}
+
+.nav-logo svg:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 12px rgba(159, 122, 234, 0.8));
 }
 
 
@@ -170,6 +171,17 @@ section.slide-up.animated {
     text-shadow: 0 0 25px rgba(15, 116, 218, 0.6);
     line-height: 1.1;
 }
+
+/* Style for "Veritas Nexus" subheading in hero section */
+.hero-veritas-nexus {
+    font-size: 2.2em; /* Prominent size */
+    font-weight: 700;
+    color: var(--text-light); /* Light color */
+    margin-bottom: 30px; /* Space it out from subtitle */
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(255,255,255,0.2);
+}
+
 
 .hero-subtitle {
     font-size: 1.5em;
@@ -497,72 +509,57 @@ section.slide-up.animated {
     box-shadow: 0 15px 30px rgba(0,0,0,0.3);
 }
 
-.team-member.leader {
-    border: 3px solid var(--accent-blue); /* Themed border for leader */
-    background: linear-gradient(135deg, var(--card-bg) 0%, #1c3d6d 100%); /* Subtle gradient */
-}
-
-.team-member.important {
-    border: 2px solid var(--warning-orange); /* Themed border for important */
-    background: linear-gradient(135deg, var(--card-bg) 0%, #2e3b5e 100%); /* Subtle gradient */
-}
-
-/* Team Member Text Colors */
-.team-member .member-name {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--accent-blue); /* Blue color for names */
-    margin-bottom: 8px;
-}
-
-.team-member .member-role {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text-light); /* Lighter text for roles */
-    margin-bottom: 10px;
-}
-
-.team-member .member-description {
-    font-size: 0.9rem;
-    color: var(--text-muted); /* Muted text for descriptions */
-    line-height: 1.5;
-}
-
-
+/* Specific Badge Styles for all team members */
 .badge {
     display: inline-block;
-    background: var(--card-bg); /* Muted badge background */
-    color: var(--accent-blue); /* Themed badge text color */
     padding: 4px 12px;
     border-radius: 15px;
     font-size: 0.8rem;
     margin-top: 10px;
-    border: 1px solid var(--border-color);
+    color: white; /* Ensure text is white on colored badges */
+    border: 1px solid transparent; /* Default to transparent, specific badges will override */
 }
 
 .badge.leader {
-    background: var(--accent-blue); /* Stronger color for leader badge */
-    color: white;
-    border-color: var(--accent-blue);
+    background: linear-gradient(90deg, #9f7aea, #6a82fb); /* Leader's unique gradient */
+    border-color: #6a82fb;
 }
 
-.badge.important {
-    background: var(--warning-orange); /* Stronger color for important badge */
-    color: white;
-    border-color: var(--warning-orange);
+.badge.lead-dev {
+    background: linear-gradient(90deg, var(--warning-orange), #f57c00); /* Lead Dev's orange gradient */
+    border-color: #f57c00;
 }
 
-.badge.non-technical {
-    background: var(--accent-purple); /* Stronger color for non-technical badge */
-    color: white;
-    border-color: var(--accent-purple);
+.badge.frontend-dev {
+    background: linear-gradient(90deg, #0f74da, #00c6ff); /* Blue to light blue */
+    border-color: #00c6ff;
+}
+
+.badge.research-lead {
+    background: linear-gradient(90deg, #4CAF50, #8bc34a); /* Green gradient */
+    border-color: #8bc34a;
+}
+
+.badge.qa-specialist {
+    background: linear-gradient(90deg, #8e44ad, #b565e6); /* Purple gradient */
+    border-color: #b565e6;
+}
+
+.badge.content-strategist {
+    background: linear-gradient(90deg, #ff9800, #ffc107); /* Yellow/Orange gradient */
+    border-color: #ffc107;
+}
+
+.badge.operations {
+    background: linear-gradient(90deg, #dc3545, #e67d22); /* Reddish-orange gradient (distinct from other oranges) */
+    border-color: #e67d22;
 }
 
 .mission-statement {
     text-align: center;
     margin-top: 60px; /* Increased margin */
     padding: 40px; /* Increased padding */
-    background: var(--card-bg); /* Themed background */
+    background: var(--card-bg);
     border-radius: 15px;
     border: 1px solid var(--border-color);
     box-shadow: 0 5px 20px rgba(0,0,0,0.2);
@@ -667,6 +664,10 @@ section.slide-up.animated {
         font-size: 2.5em;
     }
 
+    .hero-veritas-nexus { /* Adjust for smaller screens */
+        font-size: 1.8em;
+    }
+
     .hero-subtitle {
         font-size: 1.2em;
     }
@@ -676,8 +677,13 @@ section.slide-up.animated {
     }
 
     .nav-logo {
-        font-size: 1.8rem;
+        font-size: 0; /* Hide any default text if present */
     }
+    .nav-logo svg {
+        width: 50px; /* Slightly smaller VN logo on mobile */
+        height: 35px;
+    }
+
 
     .nav-links {
         gap: 15px;
@@ -762,6 +768,9 @@ section.slide-up.animated {
     }
     .hero-title {
         font-size: 2em;
+    }
+    .hero-veritas-nexus { /* Further adjust for very small screens */
+        font-size: 1.5em;
     }
     .hero-subtitle {
         font-size: 1em;
