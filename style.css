@@ -297,7 +297,7 @@ section.slide-up.animated {
     margin-top: 15px; /* Adjust margin after heading */
     text-align: left;
     font-weight: bold; /* Make AI text bold */
-    color: var(--accent-blue); /* A subtle color for emphasis */
+    color: #e0e0e0; /* Changed to a light grey for better contrast on all result backgrounds */
     line-height: 1.7; /* Improve readability */
 }
 
@@ -507,7 +507,7 @@ section.slide-up.animated {
     background: linear-gradient(135deg, var(--card-bg) 0%, #2e3b5e 100%); /* Subtle gradient */
 }
 
-/* NEW: Team Member Text Colors */
+/* Team Member Text Colors */
 .team-member .member-name {
     font-size: 1.4rem;
     font-weight: 700;
