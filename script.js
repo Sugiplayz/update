@@ -183,8 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (verdict === 'fake') {
                 resultIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
                 if (resultTitle) resultTitle.textContent = 'Likely FAKE News';
-            } else {
-                resultIcon.innerHTML = '<i class="fas fa-question-circle"></i>';
+            } else { // This is the 'uncertain' case
+                resultIcon.innerHTML = '<i class="fas fa-question-circle"></i>'; // Correct Font Awesome icon for uncertain
                 if (resultTitle) resultTitle.textContent = 'Uncertain - Needs Verification';
             }
         } else {
