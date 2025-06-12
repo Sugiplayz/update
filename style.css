@@ -57,17 +57,18 @@ body {
     font-family: 'Inter', sans-serif; /* Ensure Inter font for logo */
     font-size: 2.2rem; /* Larger logo for prominence */
     font-weight: 900; /* Extra bold */
-    background: linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853); /* Google-like blended colors */
+    /* THIS IS THE CORRECTED LOGO GRADIENT AND SHADOW */
+    background: linear-gradient(90deg, #9f7aea, #6a82fb); /* Purple to lighter blue */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 10px rgba(66, 133, 244, 0.6), 0 0 20px rgba(234, 67, 53, 0.4); /* Subtle glow */
+    text-shadow: 0 0 10px rgba(159, 122, 234, 0.6), 0 0 20px rgba(106, 130, 251, 0.4);
     letter-spacing: -1px; /* Slightly tighter for modern look */
     transition: all 0.3s ease;
     cursor: default;
 }
 
 .nav-logo:hover {
-    text-shadow: 0 0 15px rgba(66, 133, 244, 0.8), 0 0 25px rgba(234, 67, 53, 0.6); /* More intense glow on hover */
+    text-shadow: 0 0 15px rgba(159, 122, 234, 0.8), 0 0 25px rgba(106, 130, 251, 0.6); /* More intense glow on hover */
     transform: scale(1.02);
 }
 
