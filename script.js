@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const analyzeButton = document.getElementById('analyzeButton');
     const loadingDiv = document.getElementById('loading');
     const resultDiv = document.getElementById('result');
-    const analysisContent = document.getElementById('analysisContent');
+    const analysisContent = document.getElementById('analysisContent'); // New element for AI text
     const errorDiv = document.getElementById('error');
     const errorMessage = document.getElementById('errorMessage');
 
@@ -143,13 +143,18 @@ document.addEventListener('DOMContentLoaded', () => {
         let content = '';
         let contentType = ''; // 'url' or 'text'
 
+        // Log input values directly before validation
+        console.log('Current active tab for analysis:', currentTab);
+        console.log('Value from newsUrlInput:', newsUrlInput ? newsUrlInput.value.trim() : 'N/A');
+        console.log('Value from newsTextInput:', newsTextInput ? newsTextInput.value.trim() : 'N/A');
+
         if (currentTab === 'url') {
             content = newsUrlInput.value.trim();
             contentType = 'url';
             if (!content) {
                 setVisibility(errorDiv, true);
                 errorMessage.innerText = 'Please enter a valid URL to analyze.';
-                console.log('URL input empty.'); // Debugging
+                console.log('URL input empty, showing error.'); // Debugging
                 return;
             }
         } else { // currentTab === 'text'
@@ -158,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!content) {
                 setVisibility(errorDiv, true);
                 errorMessage.innerText = 'Please enter some news text to analyze.';
-                console.log('Text input empty.'); // Debugging
+                console.log('Text input empty, showing error.'); // Debugging
                 return;
             }
         }
@@ -261,27 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (analysisContent) analysisContent.innerText = aiAnalysisText;
         else console.warn('analysisContent element not found!'); // Debugging
 
-        // Generate mock sources (from Final Prototype 1.html)
-        const sources = [
-            'Reuters', 'Associated Press', 'BBC News', 'CNN', 'NPR',
-            'The Guardian', 'Wall Street Journal', 'New York Times',
-            'Snopes', 'FactCheck.org', 'PolitiFact', 'Washington Post'
-        ];
-        const sourcesGrid = document.getElementById('sourcesGrid');
-        if (sourcesGrid) {
-            sourcesGrid.innerHTML = '';
-            const numSources = 6 + Math.floor(Math.random() * 3); // Show random 6-8 sources
-            const shuffled = sources.sort(() => 0.5 - Math.random());
-            for (let i = 0; i < numSources; i++) {
-                const sourceDiv = document.createElement('div');
-                sourceDiv.className = 'source-item';
-                sourceDiv.textContent = shuffled[i];
-                sourcesGrid.appendChild(sourceDiv);
-            }
-            console.log('Mock sources generated.'); // Debugging
-        } else {
-            console.warn('sourcesGrid element not found!'); // Debugging
-        }
+        // Removed "Generate mock sources" logic as the section is removed from HTML
     }
 
     // --- Initializations ---
