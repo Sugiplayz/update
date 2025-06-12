@@ -188,7 +188,7 @@ section.slide-up.animated {
     border: 1px solid var(--border-color); /* Add border */
 }
 
-/* NEW: Prompt Area styling for single input */
+/* Prompt Area styling for single input */
 .prompt-area {
     background: var(--card-bg);
     border-radius: 15px;
@@ -292,16 +292,14 @@ section.slide-up.animated {
     color: var(--text-light); /* Ensure general content text is light */
 }
 
-/* Specific styling for the AI explanation text */
+/* Styling for the AI explanation text */
 .ai-explanation-text {
-    margin-top: 20px;
-    text-align: left; /* Align AI text to left */
-    color: var(--text-light);
-    border-top: 1px solid rgba(255,255,255,0.2);
-    padding-top: 15px;
+    margin-top: 15px; /* Adjust margin after heading */
+    text-align: left;
+    font-weight: bold; /* Make AI text bold */
+    color: var(--accent-blue); /* A subtle color for emphasis */
     line-height: 1.7; /* Improve readability */
 }
-
 
 .status-disclaimer {
     font-size: 0.9em;
@@ -371,6 +369,22 @@ section.slide-up.animated {
     font-size: 1.2rem;
     font-weight: 500;
 }
+
+.analysis-details {
+    background: rgba(255,255,255,0.15); /* Slightly lighter background for the breakdown section */
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px; /* Space between header and breakdown */
+    color: white; /* Ensure text is visible */
+}
+
+.analysis-details h4 {
+    font-size: 1.3em;
+    margin-bottom: 15px;
+    color: var(--text-light); /* Color for the heading */
+    text-align: center; /* Center the heading */
+}
+
 
 /* Features Section */
 .features {
@@ -473,7 +487,7 @@ section.slide-up.animated {
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    text-align: center; /* Ensures content within is centered */
+    text-align: center; /* Ensures content within is centered, including Lokithash */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 1px solid var(--border-color); /* Add border */
 }
