@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const analyzeButton = document.getElementById('analyzeButton');
     const loadingDiv = document.getElementById('loading');
     const resultDiv = document.getElementById('result');
-    const analysisContent = document.getElementById('analysisContent'); // New element for AI text
+    const analysisContent = document.getElementById('analysisContent'); // Targeted div for AI text explanation
     const errorDiv = document.getElementById('error');
     const errorMessage = document.getElementById('errorMessage');
 
@@ -120,11 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (tabType === 'url') {
             setVisibility(urlSection, true);
-        } else {
+        } else { // It's 'text'
             setVisibility(textSection, true);
         }
 
         currentTab = tabType;
+        console.log('Current tab is now:', currentTab); // Verify tab state
         hideAllStatusDisplays(); // Clear status messages when switching tabs
     }
 
@@ -145,8 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Log input values directly before validation
         console.log('Current active tab for analysis:', currentTab);
-        console.log('Value from newsUrlInput:', newsUrlInput ? newsUrlInput.value.trim() : 'N/A');
-        console.log('Value from newsTextInput:', newsTextInput ? newsTextInput.value.trim() : 'N/A');
+        console.log('Value from newsUrlInput (trimmed):', newsUrlInput ? newsUrlInput.value.trim() : 'N/A');
+        console.log('Value from newsTextInput (trimmed):', newsTextInput ? newsTextInput.value.trim() : 'N/A');
 
         if (currentTab === 'url') {
             content = newsUrlInput.value.trim();
@@ -172,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hideAllStatusDisplays();
         setVisibility(loadingDiv, true); // Show loading indicator
         analyzeButton.disabled = true; // Disable button during analysis
-        console.log('Starting analysis for:', contentType, 'content.'); // Debugging
+        console.log(`Starting analysis for type: ${contentType}, content length: ${content.length}`); // Debugging
 
         try {
             // Call the Netlify Function (your actual API call)
@@ -183,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ news: content, type: contentType }), // Pass type if your function needs it
             });
-            console.log('Fetch response received:', response.status); // Debugging
+            console.log('Fetch response received, status:', response.status); // Debugging
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -210,24 +211,18 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Displaying analysis result. AI Text:', aiAnalysisText); // Debugging
 
         let verdict = 'uncertain';
-        let confidence = Math.random(); // Random confidence for mock
-        if (aiAnalysisText.toLowerCase().includes('likely genuine') || aiAnalysisText.toLowerCase().includes('likely real')) {
+        let confidence = Math.random(); // Default for mock
+        if (aiAnalysisText.toLowerCase().includes('likely genuine') || aiAnalysisText.toLowerCase().includes('likely real') || aiAnalysisText.toLowerCase().includes('true')) {
             verdict = 'real';
-            confidence = 0.8 + Math.random() * 0.2; // Higher confidence
-        } else if (aiAnalysisText.toLowerCase().includes('likely fake') || aiAnalysisText.toLowerCase().includes('misinformation')) {
+            confidence = 0.8 + Math.random() * 0.2; // Higher confidence for "real"
+        } else if (aiAnalysisText.toLowerCase().includes('likely fake') || aiAnalysisText.toLowerCase().includes('misinformation') || aiAnalysisText.toLowerCase().includes('false')) {
             verdict = 'fake';
-            confidence = 0.8 + Math.random() * 0.2; // Higher confidence
+            confidence = 0.8 + Math.random() * 0.2; // Higher confidence for "fake"
+        } else {
+            // If AI text doesn't strongly indicate real/fake, use a lower/mid confidence for "uncertain"
+            confidence = 0.3 + Math.random() * 0.4; 
         }
         console.log('Inferred verdict:', verdict, 'Confidence:', confidence); // Debugging
-
-        // Mock detailed analysis points (since AI returns freeform text)
-        const mockDetails = {
-            sourceCredibility: ['High', 'Medium', 'Low'][Math.floor(Math.random() * 3)],
-            factVerification: ['Verified', 'Partial', 'Disputed'][Math.floor(Math.random() * 3)],
-            biasDetection: ['Minimal', 'Moderate', 'High'][Math.floor(Math.random() * 3)],
-            crossReference: `${Math.floor(Math.random() * (95 - 20) + 20)}%`
-        };
-        console.log('Mock details:', mockDetails); // Debugging
 
         const resultIcon = document.getElementById('resultIcon');
         const resultTitle = document.getElementById('resultTitle');
@@ -256,17 +251,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (confidenceScore) confidenceScore.textContent = `Confidence: ${Math.round(confidence * 100)}%`;
         else console.warn('confidenceScore element not found!'); // Debugging
 
-        // Set analysis details (using mock details for now)
-        if (document.getElementById('sourceCredibility')) document.getElementById('sourceCredibility').textContent = mockDetails.sourceCredibility; else console.warn('sourceCredibility element not found!'); // Debugging
-        if (document.getElementById('factVerification')) document.getElementById('factVerification').textContent = mockDetails.factVerification; else console.warn('factVerification element not found!'); // Debugging
-        if (document.getElementById('biasDetection')) document.getElementById('biasDetection').textContent = mockDetails.biasDetection; else console.warn('biasDetection element not found!'); // Debugging
-        if (document.getElementById('crossReference')) document.getElementById('crossReference').textContent = mockDetails.crossReference; else console.warn('crossReference element not found!'); // Debugging
-
         // Display the actual AI-generated analysis text
-        if (analysisContent) analysisContent.innerText = aiAnalysisText;
-        else console.warn('analysisContent element not found!'); // Debugging
+        if (analysisContent) {
+            analysisContent.innerText = aiAnalysisText;
+            console.log('AI analysis text displayed.'); // Debugging
+        } else {
+            console.warn('analysisContent element not found!'); // Debugging
+        }
 
-        // Removed "Generate mock sources" logic as the section is removed from HTML
+        // Removed "Generate mock sources" logic and detailed breakdown as requested
     }
 
     // --- Initializations ---
@@ -277,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
     switchTab('url');
 
     // Intersection Observer for scroll animations
-    const observer = new IntersectionObserver((entries) => {
+    const observer = new Intersection Observer((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('animated');
