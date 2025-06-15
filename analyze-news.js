@@ -31,7 +31,7 @@ exports.handler = async function(event, context) {
 
     try {
         const genAI = new GoogleGenerativeAI(API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro-preview-06-05" }); // You can use "gemini-pro" or other available models
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-preview-05-20" }); // You can use "gemini-pro" or other available models
 
         const prompt = `Analyze the following news text for signs of fake news, misinformation, or bias. Provide a concise assessment, clearly stating whether it appears 'Likely Genuine', 'Likely Fake', or 'Uncertain'. Just say it even if its not on your own knowledge surf through the web and give feed back, If its too short just give a close to the real thing feedback and say this will be more accurate if you give more information or the website url. if url given analyze the contents not the website whether its reputable or not.If the give news is suppsedly in the future or something like that Say its uncertain as the result
 
