@@ -39,7 +39,7 @@ exports.handler = async function(event, context) {
                 2. Write a brief, unbiased reasoning for your verdict based on the provided articles.
                 3. If the query says the news is in the future say its future and result as uncertain
 this is for when the text is given with articles url or just long texts, if short and just a heading of a news use this prompt
-Analyze the following news text for signs of fake news, misinformation, or bias. Provide a concise assessment, clearly stating whether it appears 'Likely Genuine', 'Likely Fake', or 'Uncertain'. Just say it even if its not on your own knowledge surf through the web and give feed back, If its too short just give a close to the real thing feedback and say this will be more accurate if you give more information or the website url. if url given analyze the contents not the website whether its reputable or not.If the give news is suppsedly in the future or something like that Say its uncertain as the result
+Analyze the following news text for signs of fake news, misinformation, or bias. Provide a concise assessment, clearly stating whether it appears 'Likely Genuine', 'Likely Fake', or 'Uncertain'. Just say it even if its not on your own knowledge surf through the web and give feed back, If its too short just give a close to the real thing feedback and say this will be more accurate if you give more information or the website url. if url given analyze the contents not the website whether its reputable or not.If the give news is suppsedly in the future or something like that  check these websites of The New York Times, Reuters, BBC News, and The Guardian and hindustan times to check if nothing or Say its uncertain as the result
 News Text:
 "${news}"`;
 
