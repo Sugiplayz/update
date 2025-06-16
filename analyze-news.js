@@ -6,10 +6,10 @@ const fetch = require('node-fetch'); // You may need to add 'node-fetch' to your
 async function performGoogleSearch(query) {
     console.log(`Performing a real-time search for: ${query}`);
     
-    const Google Search_API_KEY = process.env.Google Search_API_KEY;
+    const Google_Search_API_KEY = process.env.Google Search_API_KEY;
     const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
 
-    if (!Google Search_API_KEY || !SEARCH_ENGINE_ID) {
+    if (!Google_Search_API_KEY || !SEARCH_ENGINE_ID) {
         console.error("Google Search API Key or Search Engine ID is not set.");
         return "Error: Server is not configured for searching.";
     }
