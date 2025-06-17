@@ -1,73 +1,5 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const fetch = require('node-fetch'); // You may need to add 'node-fetch' to your project's dependencies
-
-// --- Helper Function to Perform the actual Google Search ---
-// This function will be called by the Gemini model when it needs to search the web.
-async function performGoogleSearch(query) {
-    console.log(`Performing a real-time search for: ${query}`);
-    
-    // Corrected variable names to use underscores for consistency and validity
-    const Google_Search_API_KEY = process.env.Google_Search_API_KEY;
-    const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
-
-    if (!Google_Search_API_KEY || !SEARCH_ENGINE_ID) {
-        console.error("Google Search API Key or Search Engine ID is not set.");
-        return "Error: Server is not configured for searching.";
-    }
-
-    // THIS IS THE CRUCIAL FIX FOR THE SyntaxError: Unexpected identifier 'Search'
-    // Using the correctly named variable 'Google Search_API_KEY' in the template literal
-    const url = `https://www.googleapis.com/customsearch/v1?key=${Google_Search_API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${encodeURIComponent(query)}`;
-
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            console.error(`Google Search API error: ${response.statusText}`);
-            return `Error: Failed to fetch search results. Status: ${response.status}`;
-        }
-        const data = await response.json();
-
-        // Extract and format the most relevant results for the model
-        const results = data.items?.slice(0, 5).map(item => ({
-            title: item.title,
-            link: item.link,
-            snippet: item.snippet
-        })) || [];
-        
-        return JSON.stringify(results);
-
-    } catch (error) {
-        console.error('Error during Google Search API call:', error);
-        return "Error: An exception occurred while trying to perform a web search.";
-    }
-}
-
-// --- Tool Definition for internal use and Gemini API declaration ---
-// We'll define the function declaration separately to pass to Gemini,
-// and keep a mapping for our local execution.
-const toolDeclarations = [
-    {
-        // This is the object that the Gemini API expects directly within the 'tools' array.
-        name: "GoogleSearch", // The name the model will call
-        description: "Performs a Google search to find the most recent and relevant information on a given topic. Use this to verify news, check facts, and find official statements.",
-        parameters: {
-            type: "object",
-            properties: {
-                query: {
-                    type: "string",
-                    description: "The search query to use. Be specific to get the best results."
-                }
-            },
-            required: ["query"]
-        },
-    }
-];
-
-// This object maps tool names to their corresponding JavaScript functions for local execution.
-const toolFunctions = {
-    "GoogleSearch": performGoogleSearch,
-};
-
+const fetch = require('node-fetch'); // Still needed for general HTTP requests, though not directly for Google Search API here
 
 exports.handler = async function(event) {
     if (event.httpMethod !== 'POST') {
@@ -87,91 +19,80 @@ exports.handler = async function(event) {
 
     try {
         const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-        // Get a model that supports tool use and pass the tool definition
-        const model = genAI.getGenerativeModel({
-            model: "gemini-2.0-flash", // Using a model that is excellent at tool use
-            // IMPORTANT: Pass the 'toolDeclarations' array directly here.
-            tools: toolDeclarations,
+        
+        // Get the Gemini model
+        const model = genAI.getGenerativeModel({ 
+            model: "gemini-2.0-flash",
+            // IMPORTANT: Enable the built-in Google Search tool here
+            tools: [{
+                googleSearch: {} // This activates the built-in Google Search grounding
+            }],
         });
 
-        // Start a chat session to handle the back-and-forth for tool calling
-        const chat = model.startChat();
-
-        // Use the clear, direct prompt designed for tool use
+        // The prompt should still guide the model on what to do.
+        // It will automatically use the enabled Google Search tool if it deems it helpful.
         const prompt = `
-            Act as a meticulous fact-checker. Your task is to verify the authenticity of the following news story. To do this, you must use the search tool provided to find corroborating evidence.
+            Act as a meticulous fact-checker. Your task is to verify the authenticity of the following news story. To do this, use your knowledge and, crucially, leverage Google Search to find corroborating evidence.
 
             Follow these steps:
-            1.  **Analyze the Source (if provided):** Scrutinize the original source.
-            2.  **Corroborate with Multiple Reputable Sources:** Use the search tool to find other well-established news outlets reporting on the same story.
-            3.  **Check for Official Statements:** Use the search tool to look for official statements from anyone involved.
-            4.  **Synthesize and Conclude:** Based on your search findings, provide a clear conclusion (Real, Fake, or Uncertain) and explain your reasoning, citing the sources you found.
+            1.  **Analyze the News:** Carefully read the provided news story.
+            2.  **Perform Grounded Search:** If needed, use Google Search to find relevant, recent, and reputable information, official statements, and multiple sources.
+            3.  **Synthesize and Conclude:** Based on all available information (your knowledge and search results), provide a clear conclusion (Real, Fake, or Uncertain) and explain your reasoning, citing any factual discrepancies or corroborating evidence.
 
             Here is the news story to verify: "${news}"
         `;
         
-        const result = await chat.sendMessage(prompt);
+        // Send the message. The model will internally decide when to use Google Search.
+        const result = await model.generateContent(prompt);
         const response = result.response;
 
-        // Check if the model decided to call a tool
-        const functionCall = response.functionCalls()?.[0];
+        let analysisText = response.text();
+        let groundingDetails = '';
 
-        if (functionCall) {
-            // The model wants to search!
-            const { name, args } = functionCall;
-            // Lookup the actual JavaScript function using the name provided by the model
-            if (toolFunctions[name]) { 
-                const searchFunction = toolFunctions[name]; // Access the actual function from our toolFunctions object
-                const searchQuery = args.query;
-
-                console.log(`Executing tool: ${name} with query: ${searchQuery}`);
-
-                // Execute the search function
-                const searchResults = await searchFunction(searchQuery);
-
-                console.log(`Tool ${name} returned results: ${searchResults.substring(0, Math.min(searchResults.length, 100))}...`); // Log snippet of results
-
-                // Send the search results back to the model
-                const result2 = await chat.sendMessage([
-                    {
-                        functionResponse: {
-                            // The 'name' here MUST exactly match the 'name' in the tool declaration
-                            name: name, // Use the name returned by the model's functionCall
-                            response: {
-                                content: searchResults,
-                            }
-                        }
-                    }
-                ]);
-
-                // Get the final answer after the model has analyzed the search results
-                const finalResponse = result2.response.text();
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify({ analysis: finalResponse }),
-                };
-
-            } else {
-                 console.error(`Tool call received for unknown or unexpected tool: ${name}`);
-                 return {
-                    statusCode: 500,
-                    body: JSON.stringify({ error: `Received unexpected tool call: ${name}` }),
-                 };
+        // Optional: Retrieve grounding metadata if available
+        if (response.candidates && response.candidates[0] && response.candidates[0].groundingMetadata) {
+            const groundingMetadata = response.candidates[0].groundingMetadata;
+            if (groundingMetadata.searchQueries && groundingMetadata.searchQueries.length > 0) {
+                groundingDetails += '\n\n--- Search Queries Used ---\n';
+                groundingMetadata.searchQueries.forEach(query => {
+                    groundingDetails += `- "${query.text}"\n`;
+                });
+            }
+            if (groundingMetadata.webPages && groundingMetadata.webPages.length > 0) {
+                groundingDetails += '\n--- Web Pages Referenced ---\n';
+                groundingMetadata.webPages.forEach(page => {
+                    groundingDetails += `- ${page.url}\n`;
+                });
+            }
+            if (groundingMetadata.searchEntryPoint && groundingMetadata.searchEntryPoint.renderedContent) {
+                groundingDetails += '\n--- Grounding Rendered Content ---\n';
+                groundingDetails += groundingMetadata.searchEntryPoint.renderedContent;
             }
         }
-        
-        // If the model answered without a tool call (unlikely for this prompt but possible)
-        const analysis = response.text();
+
         return {
             statusCode: 200,
-            body: JSON.stringify({ analysis: analysis }),
+            body: JSON.stringify({ 
+                analysis: analysisText,
+                grounding: groundingDetails // Include grounding details in the response
+            }),
         };
 
     } catch (error) {
         console.error('Error interacting with Gemini API:', error);
+        // You might want to distinguish between API errors and other errors
+        if (error.status) {
+            return {
+                statusCode: error.status,
+                body: JSON.stringify({ 
+                    error: `Gemini API Error: ${error.statusText || 'Unknown'}`,
+                    details: error.errorDetails || error.message
+                }),
+            };
+        }
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Failed to analyze news.' }),
+            body: JSON.stringify({ error: 'Failed to analyze news due to an unexpected error.' }),
         };
     }
 };
