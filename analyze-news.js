@@ -44,7 +44,7 @@ async function performGoogleSearch(query) {
 // --- Tool Definition ---
 // Tool names for the API should be single strings without spaces.
 const tools = {
-    "Google_Search": { // Tool name as a single string
+    "google_search": { // Tool name as a single string
         description: "Performs a Google search to find the most recent and relevant information on a given topic. Use this to verify news, check facts, and find official statements.",
         parameters: {
             type: "object",
@@ -122,7 +122,7 @@ exports.handler = async function(event) {
                     {
                         functionResponse: {
                             // CORRECTED: The name sent back must match the tool name defined in the `tools` object.
-                            name: 'Google_Search', 
+                            name: 'google_search', 
                             response: {
                                 content: searchResults,
                             }
