@@ -42,21 +42,30 @@ async function performGoogleSearch(query) {
 }
 
 // --- Tool Definition ---
-// Tool names for the API should be single strings without spaces.
+// IMPORTANT: This structure is adjusted for the Gemini API's `tools` parameter.
+// The `tools` object acts as a lookup for your JavaScript functions
+// and their corresponding API declarations.
 const tools = {
-    "google_search": { // Tool name as a single string
-        description: "Performs a Google search to find the most recent and relevant information on a given topic. Use this to verify news, check facts, and find official statements.",
-        parameters: {
-            type: "object",
-            properties: {
-                query: {
-                    type: "string",
-                    description: "The search query to use. Be specific to get the best results."
-                }
+    // The key 'Google Search' here matches the 'name' in the declaration below
+    "GoogleSearch": { 
+        // This is the actual JavaScript function that gets executed
+        function: performGoogleSearch, 
+        // This 'declaration' object is what the Gemini API expects to see
+        // when you define the tools it can use.
+        declaration: { 
+            name: "GoogleSearch", // This name is what the Gemini model will call
+            description: "Performs a Google search to find the most recent and relevant information on a given topic. Use this to verify news, check facts, and find official statements.",
+            parameters: {
+                type: "object",
+                properties: {
+                    query: {
+                        type: "string",
+                        description: "The search query to use. Be specific to get the best results."
+                    }
+                },
+                required: ["query"]
             },
-            required: ["query"]
-        },
-        function: performGoogleSearch // Link the definition to our actual search function
+        }
     }
 };
 
@@ -82,7 +91,10 @@ exports.handler = async function(event) {
         // Get a model that supports tool use and pass the tool definition
         const model = genAI.getGenerativeModel({
             model: "gemini-2.0-flash", // Using a model that is excellent at tool use
-            tools: tools,
+            // IMPORTANT: The `tools` parameter here expects an ARRAY of function declarations.
+            tools: [
+                tools.Google Search.declaration // We are passing the 'declaration' part of our defined tool
+            ],
         });
 
         // Start a chat session to handle the back-and-forth for tool calling
@@ -110,19 +122,24 @@ exports.handler = async function(event) {
         if (functionCall) {
             // The model wants to search!
             const { name, args } = functionCall;
-            if (tools[name]) {
-                const searchFunction = tools[name].function;
+            // Lookup the actual JavaScript function using the name provided by the model
+            if (tools[name] && tools[name].function) { 
+                const searchFunction = tools[name].function; // Access the actual function from our tools object
                 const searchQuery = args.query;
+
+                console.log(`Executing tool: ${name} with query: ${searchQuery}`);
 
                 // Execute the search function
                 const searchResults = await searchFunction(searchQuery);
+
+                console.log(`Tool ${name} returned results: ${searchResults.substring(0, 100)}...`); // Log snippet of results
 
                 // Send the search results back to the model
                 const result2 = await chat.sendMessage([
                     {
                         functionResponse: {
-                            // CORRECTED: The name sent back must match the tool name defined in the `tools` object.
-                            name: 'google_search', 
+                            // The 'name' here MUST exactly match the 'name' in the tool declaration
+                            name: name, // Use the name returned by the model's functionCall
                             response: {
                                 content: searchResults,
                             }
@@ -137,6 +154,12 @@ exports.handler = async function(event) {
                     body: JSON.stringify({ analysis: finalResponse }),
                 };
 
+            } else {
+                 console.error(`Tool call received for unknown or unexpected tool: ${name}`);
+                 return {
+                    statusCode: 500,
+                    body: JSON.stringify({ error: `Received unexpected tool call: ${name}` }),
+                 };
             }
         }
         
