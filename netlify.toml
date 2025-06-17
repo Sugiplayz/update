@@ -5,3 +5,7 @@
 
 [functions]
   node_bundler = "esbuild"
+
+# This new section prevents the function from timing out
+[functions."analyze-news"]
+  timeout = 30
