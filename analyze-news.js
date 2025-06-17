@@ -20,63 +20,62 @@ exports.handler = async function(event) {
     try {
         const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
         
-        // Get the Gemini model
+        // Get the Gemini model with the built-in Google Search tool enabled
         const model = genAI.getGenerativeModel({ 
             model: "gemini-2.0-flash",
-            // IMPORTANT: Enable the built-in Google Search tool here
             tools: [{
                 googleSearch: {} // This activates the built-in Google Search grounding
             }],
         });
 
-        // The prompt should still guide the model on what to do.
-        // It will automatically use the enabled Google Search tool if it deems it helpful.
+        // --- REFINED PROMPT ---
         const prompt = `
-            Act as a meticulous fact-checker. Your task is to verify the authenticity of the following news story. To do this, use your knowledge and, crucially, leverage Google Search to find corroborating evidence.
+            You are an extremely concise and direct fact-checker.
+            Your ONLY task is to determine if the following news story is "Real" or "Fake".
 
-            Follow these steps:
-            1.  **Analyze the News:** Carefully read the provided news story.
-            2.  **Perform Grounded Search:** If needed, use Google Search to find relevant, recent, and reputable information, official statements, and multiple sources.
-            3.  **Synthesize and Conclude:** Based on all available information (your knowledge and search results), provide a clear conclusion (Real, Fake, or Uncertain) and explain your reasoning, citing any factual discrepancies or corroborating evidence.
+            Rules:
+            1.  For news that is likely within your general knowledge cutoff (typically recent events up to early 2024), prioritize your internal knowledge.
+            2.  For older news, obscure details, or information not within your direct knowledge, you are empowered and encouraged to use Google Search to find corroborating evidence.
+            3.  Your response MUST be ONLY ONE WORD: either "Real" or "Fake".
+            4.  Do NOT provide any explanations, reasoning, additional sentences, or commentary.
+            5.  Do NOT act conversational. Be strictly factual and to the point.
 
-            Here is the news story to verify: "${news}"
+            News story to verify: "${news}"
         `;
         
-        // Send the message. The model will internally decide when to use Google Search.
+        // Send the message. The model will internally decide when to use Google Search based on the prompt.
         const result = await model.generateContent(prompt);
         const response = result.response;
 
-        let analysisText = response.text();
-        let groundingDetails = '';
+        // The model's text should now only be "Real" or "Fake" due to the strict prompt.
+        const analysisText = response.text().trim(); // Use .trim() to remove any leading/trailing whitespace
 
-        // Optional: Retrieve grounding metadata if available
-        if (response.candidates && response.candidates[0] && response.candidates[0].groundingMetadata) {
-            const groundingMetadata = response.candidates[0].groundingMetadata;
-            if (groundingMetadata.searchQueries && groundingMetadata.searchQueries.length > 0) {
-                groundingDetails += '\n\n--- Search Queries Used ---\n';
-                groundingMetadata.searchQueries.forEach(query => {
-                    groundingDetails += `- "${query.text}"\n`;
-                });
-            }
-            if (groundingMetadata.webPages && groundingMetadata.webPages.length > 0) {
-                groundingDetails += '\n--- Web Pages Referenced ---\n';
-                groundingMetadata.webPages.forEach(page => {
-                    groundingDetails += `- ${page.url}\n`;
-                });
-            }
-            if (groundingMetadata.searchEntryPoint && groundingMetadata.searchEntryPoint.renderedContent) {
-                groundingDetails += '\n--- Grounding Rendered Content ---\n';
-                groundingDetails += groundingMetadata.searchEntryPoint.renderedContent;
-            }
+        // We are no longer including detailed grounding metadata in the immediate analysis response,
+        // as the requirement is for a single-word output.
+        // If you need to log or view grounding metadata for debugging, you can still access:
+        // response.candidates[0].groundingMetadata.searchQueries
+        // response.candidates[0].groundingMetadata.webPages
+        // console.log("Grounding metadata (for debug):", response.candidates?.[0]?.groundingMetadata);
+
+        // Ensure the output is strictly "Real" or "Fake"
+        if (analysisText === "Real" || analysisText === "Fake") {
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ 
+                    analysis: analysisText
+                }),
+            };
+        } else {
+            // Fallback if the model doesn't strictly follow the "Real" or "Fake" output
+            console.warn("Model did not return strictly 'Real' or 'Fake'. Raw response:", analysisText);
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ 
+                    analysis: "Uncertain (Model output not 'Real' or 'Fake')"
+                }),
+            };
         }
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ 
-                analysis: analysisText,
-                grounding: groundingDetails // Include grounding details in the response
-            }),
-        };
 
     } catch (error) {
         console.error('Error interacting with Gemini API:', error);
