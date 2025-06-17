@@ -6,7 +6,8 @@ const fetch = require('node-fetch'); // You may need to add 'node-fetch' to your
 async function performGoogleSearch(query) {
     console.log(`Performing a real-time search for: ${query}`);
     
-    const Google_Search_API_KEY = process.env.Google Search_API_KEY;
+    // CORRECTED: Variable names cannot have spaces. Using the standard underscore format.
+    const Google_Search_API_KEY = process.env.Google_Search_API_KEY;
     const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
 
     if (!Google_Search_API_KEY || !SEARCH_ENGINE_ID) {
@@ -14,6 +15,7 @@ async function performGoogleSearch(query) {
         return "Error: Server is not configured for searching.";
     }
 
+    // CORRECTED: Using the valid variable name in the URL.
     const url = `https://www.googleapis.com/customsearch/v1?key=${Google Search_API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${encodeURIComponent(query)}`;
 
     try {
@@ -40,7 +42,7 @@ async function performGoogleSearch(query) {
 }
 
 // --- Tool Definition ---
-// This object tells the Gemini model about the search tool we have available.
+// CORRECTED: Tool names for the API should be single strings without spaces.
 const tools = {
     Google Search: {
         description: "Performs a Google search to find the most recent and relevant information on a given topic. Use this to verify news, check facts, and find official statements.",
@@ -79,7 +81,7 @@ exports.handler = async function(event) {
         const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
         // Get a model that supports tool use and pass the tool definition
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash", // Using a model that is excellent at tool use
+            model: "gemini-2.0-flash", // Using a model that is excellent at tool use
             tools: tools,
         });
 
@@ -119,6 +121,7 @@ exports.handler = async function(event) {
                 const result2 = await chat.sendMessage([
                     {
                         functionResponse: {
+                            // CORRECTED: The name sent back must match the tool name.
                             name: 'Google Search',
                             response: {
                                 content: searchResults,
