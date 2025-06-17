@@ -16,7 +16,7 @@ async function performGoogleSearch(query) {
     }
 
     // CORRECTED: Using the valid variable name in the URL to avoid syntax errors in template literals.
-    const url = `https://www.googleapis.com/customsearch/v1?key=${Google Search_API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${encodeURIComponent(query)}`;
+    const url = `https://www.googleapis.com/customsearch/v1?key=${Google_Search_API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${encodeURIComponent(query)}`;
 
     try {
         const response = await fetch(url);
@@ -44,7 +44,7 @@ async function performGoogleSearch(query) {
 // --- Tool Definition ---
 // Tool names for the API should be single strings without spaces.
 const tools = {
-    "Google Search": { // Tool name as a single string
+    "Google_Search": { // Tool name as a single string
         description: "Performs a Google search to find the most recent and relevant information on a given topic. Use this to verify news, check facts, and find official statements.",
         parameters: {
             type: "object",
@@ -122,7 +122,7 @@ exports.handler = async function(event) {
                     {
                         functionResponse: {
                             // CORRECTED: The name sent back must match the tool name defined in the `tools` object.
-                            name: 'Google Search', 
+                            name: 'Google_Search', 
                             response: {
                                 content: searchResults,
                             }
