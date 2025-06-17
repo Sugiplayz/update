@@ -10,7 +10,8 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
-    "@google/generative-ai": "^0.14.0"
+    "@google/generative-ai": "^0.14.0",
+    "node-fetch": "^2.7.0"
   },
   "devDependencies": {
     "netlify-cli": "^17.20.0"
