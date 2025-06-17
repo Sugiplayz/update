@@ -6,7 +6,7 @@ const fetch = require('node-fetch'); // You may need to add 'node-fetch' to your
 async function performGoogleSearch(query) {
     console.log(`Performing a real-time search for: ${query}`);
     
-    // Corrected variable names to use underscores instead of spaces for consistency and validity
+    // Corrected variable names to use underscores for consistency and validity
     const Google_Search_API_KEY = process.env.Google_Search_API_KEY;
     const SEARCH_ENGINE_ID = process.env.SEARCH_ENGINE_ID;
 
@@ -15,7 +15,8 @@ async function performGoogleSearch(query) {
         return "Error: Server is not configured for searching.";
     }
 
-    // CORRECTED: Using the valid variable name in the URL to avoid syntax errors in template literals.
+    // THIS IS THE CRUCIAL FIX FOR THE SyntaxError: Unexpected identifier 'Search'
+    // Using the correctly named variable 'Google Search_API_KEY' in the template literal
     const url = `https://www.googleapis.com/customsearch/v1?key=${Google_Search_API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${encodeURIComponent(query)}`;
 
     try {
@@ -41,32 +42,30 @@ async function performGoogleSearch(query) {
     }
 }
 
-// --- Tool Definition ---
-// IMPORTANT: This structure is adjusted for the Gemini API's `tools` parameter.
-// The `tools` object acts as a lookup for your JavaScript functions
-// and their corresponding API declarations.
-const tools = {
-    // The key 'Google Search' here matches the 'name' in the declaration below
-    "GoogleSearch": { 
-        // This is the actual JavaScript function that gets executed
-        function: performGoogleSearch, 
-        // This 'declaration' object is what the Gemini API expects to see
-        // when you define the tools it can use.
-        declaration: { 
-            name:"GoogleSearch", // This name is what the Gemini model will call
-            description: "Performs a Google search to find the most recent and relevant information on a given topic. Use this to verify news, check facts, and find official statements.",
-            parameters: {
-                type: "object",
-                properties: {
-                    query: {
-                        type: "string",
-                        description: "The search query to use. Be specific to get the best results."
-                    }
-                },
-                required: ["query"]
+// --- Tool Definition for internal use and Gemini API declaration ---
+// We'll define the function declaration separately to pass to Gemini,
+// and keep a mapping for our local execution.
+const toolDeclarations = [
+    {
+        // This is the object that the Gemini API expects directly within the 'tools' array.
+        name: "GoogleSearch", // The name the model will call
+        description: "Performs a Google search to find the most recent and relevant information on a given topic. Use this to verify news, check facts, and find official statements.",
+        parameters: {
+            type: "object",
+            properties: {
+                query: {
+                    type: "string",
+                    description: "The search query to use. Be specific to get the best results."
+                }
             },
-        }
+            required: ["query"]
+        },
     }
+];
+
+// This object maps tool names to their corresponding JavaScript functions for local execution.
+const toolFunctions = {
+    "GoogleSearch": performGoogleSearch,
 };
 
 
@@ -91,10 +90,8 @@ exports.handler = async function(event) {
         // Get a model that supports tool use and pass the tool definition
         const model = genAI.getGenerativeModel({
             model: "gemini-2.0-flash", // Using a model that is excellent at tool use
-            // IMPORTANT: The `tools` parameter here expects an ARRAY of function declarations.
-            tools: [
-                tools.GoogleSearch.declaration // We are passing the 'declaration' part of our defined tool
-            ],
+            // IMPORTANT: Pass the 'toolDeclarations' array directly here.
+            tools: toolDeclarations,
         });
 
         // Start a chat session to handle the back-and-forth for tool calling
@@ -123,8 +120,8 @@ exports.handler = async function(event) {
             // The model wants to search!
             const { name, args } = functionCall;
             // Lookup the actual JavaScript function using the name provided by the model
-            if (tools[name] && tools[name].function) { 
-                const searchFunction = tools[name].function; // Access the actual function from our tools object
+            if (toolFunctions[name]) { 
+                const searchFunction = toolFunctions[name]; // Access the actual function from our toolFunctions object
                 const searchQuery = args.query;
 
                 console.log(`Executing tool: ${name} with query: ${searchQuery}`);
@@ -132,7 +129,7 @@ exports.handler = async function(event) {
                 // Execute the search function
                 const searchResults = await searchFunction(searchQuery);
 
-                console.log(`Tool ${name} returned results: ${searchResults.substring(0, 100)}...`); // Log snippet of results
+                console.log(`Tool ${name} returned results: ${searchResults.substring(0, Math.min(searchResults.length, 100))}...`); // Log snippet of results
 
                 // Send the search results back to the model
                 const result2 = await chat.sendMessage([
