@@ -53,7 +53,7 @@ const tools = {
         // This 'declaration' object is what the Gemini API expects to see
         // when you define the tools it can use.
         declaration: { 
-            name: "GoogleSearch", // This name is what the Gemini model will call
+            name:"GoogleSearch", // This name is what the Gemini model will call
             description: "Performs a Google search to find the most recent and relevant information on a given topic. Use this to verify news, check facts, and find official statements.",
             parameters: {
                 type: "object",
@@ -93,7 +93,7 @@ exports.handler = async function(event) {
             model: "gemini-2.0-flash", // Using a model that is excellent at tool use
             // IMPORTANT: The `tools` parameter here expects an ARRAY of function declarations.
             tools: [
-                tools.Google Search.declaration // We are passing the 'declaration' part of our defined tool
+                tools.GoogleSearch.declaration // We are passing the 'declaration' part of our defined tool
             ],
         });
 
