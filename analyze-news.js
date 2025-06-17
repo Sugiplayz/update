@@ -16,7 +16,7 @@ async function performGoogleSearch(query) {
     }
 
     // CORRECTED: Using the valid variable name in the URL.
-    const url = `https://www.googleapis.com/customsearch/v1?key=${Google Search_API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${encodeURIComponent(query)}`;
+    const url = `https://www.googleapis.com/customsearch/v1?key=${Google_Search_API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${encodeURIComponent(query)}`;
 
     try {
         const response = await fetch(url);
