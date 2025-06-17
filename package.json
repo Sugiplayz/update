@@ -7,7 +7,7 @@
     "start": "netlify dev"
   },
   "keywords": [],
-  "author": "Your Name",
+  "author": "Jayakanth",
   "license": "MIT",
   "dependencies": {
     "@google/generative-ai": "^0.14.0",
