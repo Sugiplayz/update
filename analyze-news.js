@@ -1,5 +1,5 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const fetch = require('node-fetch'); // Still needed for general HTTP requests, though not directly for Google Search API here
+const fetch = require('node-fetch'); // Still needed for general HTTP requests if you add other APIs, but not directly for Google Search API in this grounding setup
 
 exports.handler = async function(event) {
     if (event.httpMethod !== 'POST') {
@@ -28,58 +28,78 @@ exports.handler = async function(event) {
             }],
         });
 
-        // --- REFINED PROMPT ---
+        // --- REFINED PROMPT FOR DETAILED ANALYSIS AND GROUNDING ---
         const prompt = `
-            You are an extremely concise and direct fact-checker.
-            Your ONLY task is to determine if the following news story is "Real" or "Fake".
+            Act as a meticulous, impartial, and concise fact-checker. Your task is to analyze the provided news text for signs of fake news, misinformation, or bias.
 
-            Rules:
-            1.  For news that is likely within your general knowledge cutoff (typically recent events up to early 2024), prioritize your internal knowledge.
-            2.  For older news, obscure details, or information not within your direct knowledge, you are empowered and encouraged to use Google Search to find corroborating evidence.
-            3.  Your response MUST be ONLY ONE WORD: either "Real" or "Fake".
-            4.  Do NOT provide any explanations, reasoning, additional sentences, or commentary.
-            5.  Do NOT act conversational. Be strictly factual and to the point.
+            Based on your assessment, provide a clear conclusion, stating whether the news appears:
+            - 'Likely Genuine'
+            - 'Likely Fake'
+            - 'Uncertain'
 
-            News story to verify: "${news}"
+            After your conclusion, provide a brief, direct explanation (1-3 sentences) of your reasoning. Focus your analysis on:
+            - Factual accuracy: Are the claims supported by verifiable facts?
+            - Source credibility: Is the source reliable and unbiased?
+            - Sensationalism: Does the language use emotional appeals, hyperbole, or misleading headlines?
+            - Logical consistency: Are there contradictions or unsupported claims within the text?
+
+            Utilize Google Search as necessary to verify facts, cross-reference information with reputable sources, and check for official statements, especially for information that might be outside your direct knowledge cutoff. For very recent events, prioritize your internal knowledge, but use search if details are obscure or require real-time verification.
+
+            Do NOT include any conversational filler like "As a fact-checker..." or "Here's my analysis:". Be straightforward and objective.
+
+            News text to analyze: "${news}"
         `;
         
         // Send the message. The model will internally decide when to use Google Search based on the prompt.
         const result = await model.generateContent(prompt);
         const response = result.response;
 
-        // The model's text should now only be "Real" or "Fake" due to the strict prompt.
-        const analysisText = response.text().trim(); // Use .trim() to remove any leading/trailing whitespace
+        let analysisText = response.text().trim(); // Trim any whitespace
 
-        // We are no longer including detailed grounding metadata in the immediate analysis response,
-        // as the requirement is for a single-word output.
-        // If you need to log or view grounding metadata for debugging, you can still access:
-        // response.candidates[0].groundingMetadata.searchQueries
-        // response.candidates[0].groundingMetadata.webPages
-        // console.log("Grounding metadata (for debug):", response.candidates?.[0]?.groundingMetadata);
+        let groundingDetails = ''; // Initialize to an empty string
+        const searchQueriesUsed = [];
+        const webPagesReferenced = [];
+        let renderedGroundingContent = '';
 
-        // Ensure the output is strictly "Real" or "Fake"
-        if (analysisText === "Real" || analysisText === "Fake") {
-            return {
-                statusCode: 200,
-                body: JSON.stringify({ 
-                    analysis: analysisText
-                }),
-            };
-        } else {
-            // Fallback if the model doesn't strictly follow the "Real" or "Fake" output
-            console.warn("Model did not return strictly 'Real' or 'Fake'. Raw response:", analysisText);
-            return {
-                statusCode: 200,
-                body: JSON.stringify({ 
-                    analysis: "Uncertain (Model output not 'Real' or 'Fake')"
-                }),
-            };
+        // Retrieve and format grounding metadata if available
+        if (response.candidates && response.candidates[0] && response.candidates[0].groundingMetadata) {
+            const groundingMetadata = response.candidates[0].groundingMetadata;
+            
+            if (groundingMetadata.searchQueries && groundingMetadata.searchQueries.length > 0) {
+                groundingDetails += '\n\n--- Search Queries Used ---\n';
+                groundingMetadata.searchQueries.forEach(query => {
+                    groundingDetails += `- "${query.text}"\n`;
+                    searchQueriesUsed.push(query.text);
+                });
+            }
+            if (groundingMetadata.webPages && groundingMetadata.webPages.length > 0) {
+                groundingDetails += '\n--- Web Pages Referenced ---\n';
+                groundingMetadata.webPages.forEach(page => {
+                    groundingDetails += `- ${page.url}\n`;
+                    webPagesReferenced.push(page.url);
+                });
+            }
+            if (groundingMetadata.searchEntryPoint && groundingMetadata.searchEntryPoint.renderedContent) {
+                renderedGroundingContent = groundingMetadata.searchEntryPoint.renderedContent;
+            }
         }
 
+        // Return the structured analysis and optional grounding details
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ 
+                analysis: analysisText,
+                groundingInfo: {
+                    searchQueries: searchQueriesUsed,
+                    webPages: webPagesReferenced,
+                    renderedContent: renderedGroundingContent // This can be quite verbose
+                }
+            }),
+        };
 
     } catch (error) {
         console.error('Error interacting with Gemini API:', error);
-        // You might want to distinguish between API errors and other errors
+        // Distinguish between API errors and other errors for better debugging
         if (error.status) {
             return {
                 statusCode: error.status,
