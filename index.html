@@ -6,6 +6,33 @@
   <title>Veritas Nexus</title>
   <link rel="stylesheet" href="style.css?v=6" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    .main-wrapper section {
+      margin-bottom: 100px;
+      scroll-margin-top: 120px;
+    }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      justify-content: center;
+      align-items: start;
+      margin-top: 40px;
+    }
+    .team-member {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+    }
+    .nav-links a {
+      padding: 10px 20px;
+      display: inline-block;
+    }
+  </style>
 </head>
 <body>
 
@@ -19,6 +46,7 @@
   </nav>
 
   <div class="main-wrapper" id="home">
+
     <!-- HERO SECTION -->
     <section class="hero-section">
       <h1 class="hero-title">Uncover the Truth. Instantly.</h1>
@@ -29,7 +57,7 @@
     <!-- NEWS DETECTOR SECTION -->
     <section class="detector-section">
       <h2 class="section-title">Type News</h2>
-      <div class="main-card">
+      <div class="main-card" style="max-width: 800px; margin: 0 auto;">
         <div class="prompt-area">
           <div class="input-group">
             <label class="input-label" for="newsText">Paste News Article Text</label>
@@ -78,7 +106,7 @@
         </div>
       </div>
     </section>
-  </div>
 
+  </div>
 </body>
 </html>
