@@ -1,83 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Veritas Nexus</title>
-  <link rel="stylesheet" href="style.css?v=7" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
-  <style>
-    html, body {
-      max-width: 100%;
-      overflow-x: hidden;
-    }
-    section {
-      scroll-margin-top: 100px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verita Nexus - AI News Authenticator</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Favicon - Reverted to the working inline SVG for browser tab -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230f3460'/%3E%3Ctext x='50%' y='65%' font-family='Inter, sans-serif' font-size='50' font-weight='bold' text-anchor='middle' fill='url(%23gradient)'%3E VN %3C/text%3E%3Cdefs%3E%3ClinearGradient id='gradient' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%239f7aea;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%236a82fb;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E" type="image/svg+xml">
+
 </head>
 <body>
+    <div class="main-wrapper">
+        <!-- Navigation Bar -->
+        <nav class="nav">
+            <!-- Modern VN Logo - SVG with bold initials and gradient -->
+            <div class="nav-logo">
+                <svg width="60" height="40" viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="navLogoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#9f7aea;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#6a82fb;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <text x="0" y="30" font-family="Inter, sans-serif" font-size="36" font-weight="900" fill="url(#navLogoGradient)">VN</text>
+                </svg>
+            </div>
+            <div class="nav-links">
+                <div class="nav-link active" data-page="home">Home</div>
+                <div class="nav-link" data-page="about-us">About Us</div>
+            </div>
+        </nav>
 
-  <nav class="nav">
-    <div class="nav-logo">VN</div>
-    <div class="nav-links">
-      <a class="nav-link active" href="#home">Home</a>
-      <a class="nav-link" href="#about">About Us</a>
+        <!-- Home Page Content -->
+        <div id="home-page" class="page active">
+            <!-- Hero Section -->
+            <section class="hero-section fade-in">
+                <h1 class="hero-title">Uncover the Truth. Instantly.</h1>
+                <!-- 'Veritas Nexus' now colored and larger -->
+                <p class="hero-veritas-nexus">Verita Nexus</p>
+                <p class="hero-subtitle">Leveraging advanced AI to help you identify credible news from misinformation.</p>
+            </section>
+
+            <!-- Detector Section -->
+            <section id="detector-section" class="detector-section slide-up">
+                <h2 class="section-title">Analyze Your News</h2>
+                <p class="section-description">Paste the news article or text into the area below and click 'Analyze'.</p>
+
+                <div class="main-card">
+                    <!-- Simplified Input: Only Text Area - Now visually interesting -->
+                    <div class="prompt-area">
+                        <div class="input-group">
+                            <label class="input-label" for="newsText">Paste News Article Text</label>
+                            <textarea class="text-input input-field" id="newsText" placeholder="Paste the full news article text here for analysis..."></textarea>
+                        </div>
+                    </div>
+
+                    <button id="analyzeButton" class="analyze-btn pulse-animation">
+                        <i class="fas fa-search"></i> Analyze for Authenticity
+                    </button>
+
+                    <div id="loading" class="status-box hidden fade-in">
+                        <div class="spinner"></div>
+                        <p>Analyzing content with Aegis...</p>
+                    </div>
+
+                    <div id="result" class="status-box hidden fade-in">
+                        <div class="result-header">
+                            <div class="result-icon" id="resultIcon"></div>
+                            <div>
+                                <div class="result-title" id="resultTitle"></div>
+                                <div class="confidence-score" id="confidenceScore"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Analysis Breakdown heading with AI text -->
+                        <div class="analysis-details">
+                            <h4>Analysis Breakdown:</h4>
+                            <!-- This div will now display the AI-generated text explanation -->
+                            <div id="analysisContent" class="status-content ai-explanation-text">
+                                <!-- AI-generated detailed analysis will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <p class="status-disclaimer">
+                            Disclaimer: This tool provides an Aegis AI-driven assessment. It is not a definitive fact-checker and should be used in conjunction with other reliable sources.
+                        </p>
+                    </div>
+
+                    <div id="error" class="status-box error-box hidden fade-in">
+                        <h2 class="status-title error-title">Error:</h2>
+                        <p id="errorMessage" class="status-content error-message"></p>
+                    </div>
+                </div>
+
+                <div class="features">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="feature-title">Aegis AI Analysis</div>
+                        <div class="feature-description">
+                            Our Aegis neural networks analyze linguistic patterns, source credibility, and fact consistency using state-of-the-art NLP models.
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="feature-title">Billions of Sources</div>
+                        <div class="feature-description">
+                            Cross-reference against our massive database of verified news sources, fact-checkers, and authoritative publications worldwide.
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="feature-title">Real-time Detection</div>
+                        <div class="feature-description">
+                            Get instant results with our lightning-fast Aegis engine that processes content in seconds, not minutes.
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- About Us (Team Info) Page -->
+        <div id="about-us-page" class="page">
+            <section class="about-section slide-up">
+                <h2 class="section-title">About Veritas Nexus</h2>
+                <div class="about-content">
+                    <div class="about-card">
+                        <h3>The Challenge of Misinformation</h3>
+                        <p>In today's fast-paced digital world, distinguishing between genuine news and fabricated content can be a daunting task. Our mission is to empower you with a reliable tool to navigate the complexities of information overload and make informed decisions.</p>
+                    </div>
+                    <div class="about-card">
+                        <h3>How It Works: Aegis at Your Service</h3>
+                        <p>Veritas Nexus utilizes Aegis, its cutting-edge Generative AI module, to analyze news text. It assesses various factors, including factual consistency, language patterns, sensationalism, and potential biases, to provide an authenticity rating.</p>
+                    </div>
+                    <div class="about-card">
+                        <h3>Our Commitment to Accuracy</h3>
+                        <p>While powerful, AI models are continuously learning and evolving. Veritas Nexus, powered by Aegis, provides an AI-driven assessment and should be used as an assistive guide. Always cross-reference information with multiple reputable sources for comprehensive verification.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="team-section slide-up">
+                <h2 class="section-title"><i class="fas fa-users"></i> Meet Our Team</h2>
+                <p class="section-description">
+                    The dedicated team behind Veritas Nexus - AI-powered fake news detection platform.
+                </p>
+
+                <div class="team-grid">
+                    <div class="team-member leader">
+                        <div class="member-avatar">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="member-name">Mervin</div>
+                        <div class="member-role">Team Leader & Project Coordinator</div>
+                        <div class="member-description">
+                            Leading the Veritas Nexus project with strategic vision and technical oversight. Coordinates team efforts and ensures project delivery.
+                        </div>
+                        <div class="badge leader">Team Leader</div>
+                    </div>
+
+                    <div class="team-member lead-dev">
+                        <div class="member-avatar">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="member-name">Jayakanth</div>
+                        <div class="member-role">Lead Developer & Technical Architect</div>
+                        <div class="member-description">
+                            Core technical contributor responsible for system architecture, Aegis integration, and full-stack development of the Veritas Nexus platform.
+                        </div>
+                        <div class="badge lead-dev">Lead Developer</div>
+                    </div>
+
+                    <div class="team-member frontend-dev">
+                        <div class="member-avatar">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="member-name">Kavin</div>
+                        <div class="member-role">Frontend Developer</div>
+                        <div class="member-description">
+                            Specializes in creating intuitive user interfaces and ensuring optimal user experience across the platform.
+                        </div>
+                        <div class="badge frontend-dev">Frontend Developer</div>
+                    </div>
+
+                    <div class="team-member research-lead">
+                        <div class="member-avatar">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="member-name">Anbu Selvan</div>
+                        <div class="member-role">Research & Analysis Coordinator</div>
+                        <div class="member-description">
+                            Leads research initiatives, analyzes market trends, and coordinates with stakeholders for project requirements.
+                        </div>
+                        <div class="badge research-lead">Research Lead</div>
+                    </div>
+
+                    <div class="team-member qa-specialist">
+                        <div class="member-avatar">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="member-name">Amish</div>
+                        <div class="member-role">Quality Assurance & Documentation</div>
+                        <div class="member-description">
+                            Ensures product quality through comprehensive testing and maintains detailed project documentation.
+                        </div>
+                        <div class="badge qa-specialist">QA Specialist</div>
+                    </div>
+
+                    <div class="team-member content-strategist">
+                        <div class="member-avatar">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div class="member-name">Shree Saila Vijay</div>
+                        <div class="member-role">Content Strategy & Outreach</div>
+                        <div class="member-description">
+                            Manages content strategy, user engagement initiatives, and oversees project communication and outreach efforts.
+                        </div>
+                        <div class="badge content-strategist">Content Strategist</div>
+                    </div>
+
+                    <div class="team-member operations">
+                        <div class="member-avatar">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="member-name">Lokithash</div>
+                        <div class="member-role">Business Operations & Support</div>
+                        <div class="member-description">
+                            Handles business operations, stakeholder communication, and provides strategic support for project management and team coordination.
+                        </div>
+                        <div class="badge operations">Operations</div>
+                    </div>
+                </div>
+
+                <div class="mission-statement">
+                    <h3 class="section-title">Our Project Mission</h3>
+                    <p class="section-description">
+                        Our team is committed to combating misinformation through advanced AI technology. 
+                        Veritas Nexus, powered by Aegis, represents our collective effort to create a reliable, accessible, and intelligent 
+                        platform for fake news detection, contributing to a more informed digital society.
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer fade-in">
+            <p>&copy; 2025 Veritas Nexus. All rights reserved.</p>
+        </footer>
     </div>
-  </nav>
-
-  <div class="main-wrapper" id="home">
-    <section class="hero-section">
-      <h1 class="hero-title">Uncover the Truth. Instantly.</h1>
-      <p class="hero-veritas-nexus">Veritas Nexus</p>
-      <p class="hero-subtitle">AI-powered news credibility detector</p>
-    </section>
-
-    <section class="detector-section">
-      <h2 class="section-title">Type News</h2>
-      <div class="main-card" style="max-width: 800px; margin: 0 auto;">
-        <div class="prompt-area">
-          <div class="input-group">
-            <label class="input-label" for="newsText">Paste News Article Text</label>
-            <textarea class="text-input" id="newsText" placeholder="Paste full news article here..."></textarea>
-          </div>
-        </div>
-        <button class="analyze-btn"><i class="fas fa-search"></i> Analyze</button>
-      </div>
-    </section>
-
-    <section class="team-section" id="about">
-      <h2 class="section-title"><i class="fas fa-users"></i> Meet the Team</h2>
-      <div class="team-grid">
-        <div class="team-member leader mervin">
-          <div class="floating-icon"><i class="fas fa-lightbulb"></i></div>
-          <div class="member-name">Mervin</div>
-          <div class="member-role">Team Leader</div>
-        </div>
-        <div class="team-member lead-dev jayakanth">
-          <div class="floating-icon"><i class="fas fa-terminal"></i></div>
-          <div class="member-name">Jayakanth</div>
-          <div class="member-role">Lead Developer</div>
-        </div>
-        <div class="team-member frontend-dev kavin">
-          <div class="floating-icon"><i class="fas fa-code"></i></div>
-          <div class="member-name">Kavin</div>
-          <div class="member-role">Frontend Developer</div>
-        </div>
-        <div class="team-member research-lead">
-          <div class="member-name">Anbu Selvan</div>
-          <div class="member-role">Research Lead</div>
-        </div>
-        <div class="team-member qa-specialist">
-          <div class="member-name">Amish</div>
-          <div class="member-role">QA & Docs</div>
-        </div>
-        <div class="team-member content-strategist">
-          <div class="member-name">Shree Saila Vijay</div>
-          <div class="member-role">Content & Outreach</div>
-        </div>
-      </div>
-    </section>
-  </div>
+    <script src="script.js"></script>
 </body>
 </html>
